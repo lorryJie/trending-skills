@@ -49,12 +49,19 @@ class ClaudeSummarizer:
         if not self.api_key:
             raise ValueError("LLM_API_KEY 环境变量未设置")
 
+        # 打印配置信息
+        print(f"[LLM 配置]")
+        print(f"   Base URL: {self.base_url}")
+        print(f"   Model: {self.model}")
+        print(f"   API Key: {self.api_key[:10]}...{self.api_key[-4:]}" if len(self.api_key) > 14 else f"   API Key: {self.api_key[:5]}...")
+        print(f"   Max Tokens: {self.max_tokens}")
+
         try:
             self.client = OpenAI(
                 base_url=self.base_url,
                 api_key=self.api_key
             )
-            print(f"✅ LLM 客户端初始化成功 (模型: {self.model})")
+            print(f"✅ LLM 客户端初始化成功")
         except Exception as e:
             raise Exception(f"LLM 客户端初始化失败: {e}")
 
@@ -88,6 +95,10 @@ class ClaudeSummarizer:
         prompt = self._build_batch_prompt(details)
 
         try:
+            print(f"[API 调用] 正在发送请求...")
+            print(f"   URL: {self.base_url}/chat/completions")
+            print(f"   Prompt 长度: {len(prompt)} 字符")
+            
             response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
@@ -102,6 +113,7 @@ class ClaudeSummarizer:
 
             result_text = response.choices[0].message.content
             print(f"✅ LLM 响应成功")
+            print(f"   响应长度: {len(result_text)} 字符")
 
             # 解析结果
             results = self._parse_batch_response(result_text, details)
@@ -110,6 +122,8 @@ class ClaudeSummarizer:
 
         except Exception as e:
             print(f"❌ LLM API 调用失败: {e}")
+            print(f"   错误类型: {type(e).__name__}")
+            print(f"   详细信息: {str(e)}")
             # 返回基本信息作为降级方案
             return self._fallback_summaries(details)
 
