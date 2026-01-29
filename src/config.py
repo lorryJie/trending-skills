@@ -6,15 +6,22 @@ import os
 # ============================================================================
 # Claude API 配置 (复用现有配置)
 # ============================================================================
-ANTHROPIC_BASE_URL = os.getenv(
-    "ANTHROPIC_BASE_URL",
-    "https://open.bigmodel.cn/api/paas/v4"
+# API 基础地址（支持 OpenAI 兼容格式）
+LLM_BASE_URL = os.getenv(
+    "LLM_BASE_URL",
+    "https://api.siliconflow.cn/v1"  # 硅基流动
 )
-ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY")
+LLM_API_KEY = os.getenv("LLM_API_KEY") or os.getenv("ZHIPU_API_KEY")  # 兼容旧配置
 
-# Claude 模型配置
-CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "glm-4.7")
-CLAUDE_MAX_TOKENS = 8192
+# 模型配置
+LLM_MODEL = os.getenv("LLM_MODEL", "zai-org/GLM-4.6V")  # 硅基流动模型
+LLM_MAX_TOKENS = 8192
+
+# 兼容旧变量名
+ANTHROPIC_BASE_URL = LLM_BASE_URL
+ZHIPU_API_KEY = LLM_API_KEY
+CLAUDE_MODEL = LLM_MODEL
+CLAUDE_MAX_TOKENS = LLM_MAX_TOKENS
 
 # ============================================================================
 # RSS 配置
