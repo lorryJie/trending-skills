@@ -7,14 +7,11 @@ import os
 # Claude API 配置 (复用现有配置)
 # ============================================================================
 # API 基础地址（支持 OpenAI 兼容格式）
-LLM_BASE_URL = os.getenv(
-    "LLM_BASE_URL",
-    "https://api.siliconflow.cn/v1"  # 硅基流动
-)
+LLM_BASE_URL = os.getenv("LLM_BASE_URL") or "https://api.siliconflow.cn/v1"  # 硅基流动
 LLM_API_KEY = os.getenv("LLM_API_KEY") or os.getenv("ZHIPU_API_KEY")  # 兼容旧配置
 
 # 模型配置
-LLM_MODEL = os.getenv("LLM_MODEL", "zai-org/GLM-4.6V")  # 硅基流动模型
+LLM_MODEL = os.getenv("LLM_MODEL") or "zai-org/GLM-4.6V"  # 硅基流动模型
 LLM_MAX_TOKENS = 8192
 
 # 兼容旧变量名
