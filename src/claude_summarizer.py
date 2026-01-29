@@ -5,9 +5,9 @@ Claude Summarizer - AI 总结和分类技能
 import json
 import os
 from typing import Dict, List, Optional
-from anthropic import Anthropic
+from openai import OpenAI
 
-from src.config import ZHIPU_API_KEY, ANTHROPIC_BASE_URL, CLAUDE_MODEL, CLAUDE_MAX_TOKENS
+from src.config import LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_MAX_TOKENS
 
 
 # 分类定义
@@ -35,28 +35,28 @@ class ClaudeSummarizer:
 
     def __init__(self, api_key: str = None, base_url: str = None):
         """
-        初始化 Claude 客户端
+        初始化 LLM 客户端（OpenAI 兼容格式）
 
         Args:
             api_key: API 密钥，默认从环境变量读取
             base_url: API 基础 URL，默认从环境变量读取
         """
-        self.api_key = api_key or ZHIPU_API_KEY
-        self.base_url = base_url or ANTHROPIC_BASE_URL
-        self.model = CLAUDE_MODEL
-        self.max_tokens = CLAUDE_MAX_TOKENS
+        self.api_key = api_key or LLM_API_KEY
+        self.base_url = base_url or LLM_BASE_URL
+        self.model = LLM_MODEL
+        self.max_tokens = LLM_MAX_TOKENS
 
         if not self.api_key:
-            raise ValueError("ZHIPU_API_KEY 环境变量未设置")
+            raise ValueError("LLM_API_KEY 环境变量未设置")
 
         try:
-            self.client = Anthropic(
+            self.client = OpenAI(
                 base_url=self.base_url,
                 api_key=self.api_key
             )
-            print(f"✅ Claude 客户端初始化成功")
+            print(f"✅ LLM 客户端初始化成功 (模型: {self.model})")
         except Exception as e:
-            raise Exception(f"Claude 客户端初始化失败: {e}")
+            raise Exception(f"LLM 客户端初始化失败: {e}")
 
     def summarize_and_classify(self, details: List[Dict]) -> List[Dict]:
         """
@@ -88,7 +88,7 @@ class ClaudeSummarizer:
         prompt = self._build_batch_prompt(details)
 
         try:
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
                 temperature=0.3,
@@ -100,8 +100,8 @@ class ClaudeSummarizer:
                 ]
             )
 
-            result_text = response.content[0].text
-            print(f"✅ Claude 响应成功")
+            result_text = response.choices[0].message.content
+            print(f"✅ LLM 响应成功")
 
             # 解析结果
             results = self._parse_batch_response(result_text, details)
@@ -109,7 +109,7 @@ class ClaudeSummarizer:
             return results
 
         except Exception as e:
-            print(f"❌ Claude API 调用失败: {e}")
+            print(f"❌ LLM API 调用失败: {e}")
             # 返回基本信息作为降级方案
             return self._fallback_summaries(details)
 
