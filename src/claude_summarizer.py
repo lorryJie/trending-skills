@@ -4,6 +4,7 @@ Claude Summarizer - AI 总结和分类技能
 """
 import json
 import os
+import re
 from typing import Dict, List, Optional
 from openai import OpenAI
 
@@ -230,8 +231,15 @@ class ClaudeSummarizer:
         Returns:
             解析后的技能列表
         """
-        # 清理可能的 markdown 代码块标记
+        # 清理可能的特殊标记和 markdown 代码块
         result_text = result_text.strip()
+        
+        # 清理 GLM 模型的特殊标记
+        result_text = re.sub(r'<\|begin_of_box\|>', '', result_text)
+        result_text = re.sub(r'<\|end_of_box\|>', '', result_text)
+        result_text = re.sub(r'<\|.*?\|>', '', result_text)  # 清理其他类似标记
+        
+        # 清理 markdown 代码块标记
         if result_text.startswith("```json"):
             result_text = result_text[7:]
         if result_text.startswith("```"):
