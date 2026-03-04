@@ -3,7 +3,7 @@ Resend Sender - Resend 邮件发送
 使用 Resend API 发送 HTML 邮件
 """
 import resend
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Union
 
 
 class ResendSender:
@@ -21,7 +21,7 @@ class ResendSender:
 
     def send_email(
         self,
-        to: str,
+        to: Union[str, List[str]],
         subject: str,
         html_content: str,
         from_email: str = "onboarding@resend.dev"
@@ -30,7 +30,7 @@ class ResendSender:
         发送邮件
 
         Args:
-            to: 收件人邮箱
+            to: 收件人邮箱，支持单个字符串或字符串列表
             subject: 邮件标题
             html_content: HTML 内容
             from_email: 发件人邮箱
@@ -41,12 +41,14 @@ class ResendSender:
         if not to:
             return {"success": False, "message": "收件人邮箱为空"}
 
+        recipients = to if isinstance(to, list) else [to]
+
         try:
-            print(f"📧 正在发送邮件到: {to}")
+            print(f"📧 正在发送邮件到: {', '.join(recipients)}")
 
             params = {
                 "from": from_email,
-                "to": [to],
+                "to": recipients,
                 "subject": subject,
                 "html": html_content,
             }
@@ -74,7 +76,7 @@ class ResendSender:
 
     def send_with_text(
         self,
-        to: str,
+        to: Union[str, List[str]],
         subject: str,
         html_content: str,
         text_content: str = "",
@@ -84,7 +86,7 @@ class ResendSender:
         发送带纯文本备用的邮件
 
         Args:
-            to: 收件人邮箱
+            to: 收件人邮箱，支持单个字符串或字符串列表
             subject: 邮件标题
             html_content: HTML 内容
             text_content: 纯文本内容（备用）
@@ -96,12 +98,14 @@ class ResendSender:
         if not to:
             return {"success": False, "message": "收件人邮箱为空"}
 
+        recipients = to if isinstance(to, list) else [to]
+
         try:
-            print(f"📧 正在发送邮件到: {to}")
+            print(f"📧 正在发送邮件到: {', '.join(recipients)}")
 
             params = {
                 "from": from_email,
-                "to": [to],
+                "to": recipients,
                 "subject": subject,
                 "html": html_content,
             }
@@ -133,7 +137,7 @@ class ResendSender:
 
 def send_email(
     api_key: str,
-    to: str,
+    to: Union[str, List[str]],
     subject: str,
     html_content: str,
     from_email: str = "onboarding@resend.dev"
