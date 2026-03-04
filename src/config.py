@@ -300,7 +300,8 @@ FETCH_REQUEST_DELAY = 2  # 抓取详情时的请求间隔（秒）
 # ============================================================================
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
-EMAIL_TO = os.getenv("EMAIL_TO")
+_email_to_raw = os.getenv("EMAIL_TO", "")
+EMAIL_TO = [e.strip() for e in _email_to_raw.split(",") if e.strip()] if _email_to_raw else []
 
 # ============================================================================
 # 数据库配置
