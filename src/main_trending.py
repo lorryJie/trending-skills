@@ -66,8 +66,10 @@ def main():
 
     if not EMAIL_TO:
         print("❌ 错误: EMAIL_TO 环境变量未设置")
-        print("   请设置收件人邮箱")
+        print("   请设置收件人邮箱（多个邮箱用逗号分隔）")
         sys.exit(1)
+
+    print(f"[收件人] {', '.join(EMAIL_TO)}（共 {len(EMAIL_TO)} 个）")
 
     # 获取今日日期
     today = get_today_date()
